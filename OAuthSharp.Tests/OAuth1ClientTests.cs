@@ -28,7 +28,7 @@ namespace OAuthSharp.Tests
 
             client.AcquireRequestToken(OAUTH_URL_GET_REQUEST_TOKEN, "POST");
 
-            Assert.That(string.IsNullOrEmpty(client["token"]), Is.False);
+            Assert.That(client["token"], Is.Not.Null.Or.Empty);
         }
 
         [Test]
@@ -42,7 +42,7 @@ namespace OAuthSharp.Tests
 
             string url = client.GetAuthorizeTokenRedirectUrl(OAUTH_URL_AUTHORIZE_TOKEN, APPLICATION_NAME);
 
-            Assert.That(string.IsNullOrEmpty(url), Is.False);
+            Assert.That(url, Is.Not.Null.Or.Empty);
             Assert.That(url, Contains.Substring("?oauth_token=" + client["token"]));
             Assert.That(url, Contains.Substring("&name=" + APPLICATION_NAME));
         }
@@ -55,14 +55,18 @@ namespace OAuthSharp.Tests
             client["consumer_secret"] = CONSUMER_SECRET;
             client["callback"] = "oob";
 
+            // get request token
             client.AcquireRequestToken(OAUTH_URL_GET_REQUEST_TOKEN, "POST");
 
+            // get url to authorize token
             string url = client.GetAuthorizeTokenRedirectUrl(OAUTH_URL_AUTHORIZE_TOKEN, APPLICATION_NAME);
 
+            // use WatiN to send "user" to approve access
             using (var browser = new IE(url))
             {
                 var loginLink = browser.Link(Find.ByClass("button primary"));
 
+                // check for existence of login link
                 if (loginLink != null)
                 {
                     loginLink.Click();
@@ -76,17 +80,19 @@ namespace OAuthSharp.Tests
                 // click "approve"
                 browser.Button(Find.ByName("approve")).Click();
 
+                // extract temporary oauth_token & oauth_verifier params from query string
                 NameValueCollection queryParams = browser.Uri.ParseQueryString();
                 string token = queryParams["oauth_token"];
                 string verifier = queryParams["oauth_verifier"];
 
-                Assert.That(string.IsNullOrEmpty(token), Is.False);
-                Assert.That(string.IsNullOrEmpty(verifier), Is.False);
+                Assert.That(token, Is.Not.Null.Or.Empty);
+                Assert.That(verifier, Is.Not.Null.Or.Empty);
 
+                // finally, get access token
                 client.AcquireAccessToken(OAUTH_URL_GET_ACCESS_TOKEN, "POST", token, client["token_secret"], verifier);
 
-                Assert.That(string.IsNullOrEmpty(client["token"]), Is.False);
-                Assert.That(string.IsNullOrEmpty(client["token_secret"]), Is.False);
+                Assert.That(client["token"], Is.Not.Null.Or.Empty);
+                Assert.That(client["token_secret"], Is.Not.Null.Or.Empty);
 
                 // TODO: prove token is valid by calling API?
             }

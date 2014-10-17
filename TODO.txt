@@ -1,6 +1,2 @@
 Change _params to properties
 	client["token"] -> client.Token
-
-NUnit
-	Is.Not.NullOrEmpty
-		-> Assert.That(client["token"], Is.Not.NullOrEmpty); 
