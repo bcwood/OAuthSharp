@@ -1,0 +1,17 @@
+# Visual Studio
+[Bb]in
+[Oo]bj
+*.user
+*.suo
+*.sqlsuo
+*.pdb
+*.rdl.data
+
+# ReSharper
+*ReSharper*
+*resharper*
+
+# Windows
+Thumbs.db
+Desktop.ini
+$RECYCLE.BIN/

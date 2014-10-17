@@ -1,0 +1,31 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio 2012
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "OAuthSharp", "OAuthSharp\OAuthSharp.csproj", "{DEDA49CB-5965-472A-B546-41344AFD3AD8}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "OAuthSharp.Tests", "OAuthSharp.Tests\OAuthSharp.Tests.csproj", "{2992EC8D-5F14-4148-8281-175C0B168C6D}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{7381AE08-1499-4526-8EDD-C682F4FCFB10}"
+	ProjectSection(SolutionItems) = preProject
+		TODO.txt = TODO.txt
+	EndProjectSection
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{DEDA49CB-5965-472A-B546-41344AFD3AD8}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{DEDA49CB-5965-472A-B546-41344AFD3AD8}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{DEDA49CB-5965-472A-B546-41344AFD3AD8}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{DEDA49CB-5965-472A-B546-41344AFD3AD8}.Release|Any CPU.Build.0 = Release|Any CPU
+		{2992EC8D-5F14-4148-8281-175C0B168C6D}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{2992EC8D-5F14-4148-8281-175C0B168C6D}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{2992EC8D-5F14-4148-8281-175C0B168C6D}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{2992EC8D-5F14-4148-8281-175C0B168C6D}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+EndGlobal
