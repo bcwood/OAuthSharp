@@ -39,9 +39,15 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Ensure.cs" />
     <Compile Include="OAuth1Client.cs" />
     <Compile Include="OAuth1Response.cs" />
+    <Compile Include="OAuthAccessTokenRequest.cs" />
+    <Compile Include="OAuthRequest.cs" />
+    <Compile Include="OAuthRequestTokenRequest.cs" />
+    <Compile Include="Parameter.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="RequestParameters.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

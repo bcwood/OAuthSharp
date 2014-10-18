@@ -22,28 +22,31 @@ namespace OAuthSharp.Tests
         public void AcquireRequestToken()
         {
             var client = new OAuth1Client();
-            client["consumer_key"] = CONSUMER_KEY;
-            client["consumer_secret"] = CONSUMER_SECRET;
-            client["callback"] = CALLBACK_URL;
+            //client["consumer_key"] = CONSUMER_KEY;
+            //client["consumer_secret"] = CONSUMER_SECRET;
+            //client["callback"] = CALLBACK_URL;
 
-            client.AcquireRequestToken(OAUTH_URL_GET_REQUEST_TOKEN, "POST");
+            var request = new OAuthRequestTokenRequest(CONSUMER_KEY, CONSUMER_SECRET);
+            request.ReturnUrl = CALLBACK_URL;
 
-            Assert.That(client["token"], Is.Not.Null.Or.Empty);
+            var response = client.AcquireRequestToken(OAUTH_URL_GET_REQUEST_TOKEN, request);
+
+            Assert.That(response["token"], Is.Not.Null.Or.Empty);
         }
 
         [Test]
         public void GetAuthorizeTokenRedirectUrl()
         {
             var client = new OAuth1Client();
-            client["consumer_key"] = CONSUMER_KEY;
-            client["consumer_secret"] = CONSUMER_SECRET;
-            client["callback"] = CALLBACK_URL;
-            client["token"] = "tempauthtoken";
+            //client["consumer_key"] = CONSUMER_KEY;
+            //client["consumer_secret"] = CONSUMER_SECRET;
+            //client["callback"] = CALLBACK_URL;
+            const string TOKEN = "tempauthtoken";
 
-            string url = client.GetAuthorizeTokenRedirectUrl(OAUTH_URL_AUTHORIZE_TOKEN, APPLICATION_NAME);
+            string url = client.GetAuthorizeTokenRedirectUrl(OAUTH_URL_AUTHORIZE_TOKEN, TOKEN, APPLICATION_NAME);
 
             Assert.That(url, Is.Not.Null.Or.Empty);
-            Assert.That(url, Contains.Substring("?oauth_token=" + client["token"]));
+            Assert.That(url, Contains.Substring("?oauth_token=" + TOKEN));
             Assert.That(url, Contains.Substring("&name=" + APPLICATION_NAME));
         }
 
@@ -51,15 +54,18 @@ namespace OAuthSharp.Tests
         public void OAuthProcessInteractive()
         {
             var client = new OAuth1Client();
-            client["consumer_key"] = CONSUMER_KEY;
-            client["consumer_secret"] = CONSUMER_SECRET;
-            client["callback"] = "oob";
+            //client["consumer_key"] = CONSUMER_KEY;
+            //client["consumer_secret"] = CONSUMER_SECRET;
+            //client["callback"] = "oob";
 
             // get request token
-            client.AcquireRequestToken(OAUTH_URL_GET_REQUEST_TOKEN, "POST");
+            var tokenRequest = new OAuthRequestTokenRequest(CONSUMER_KEY, CONSUMER_SECRET);
+            tokenRequest.ReturnUrl = "oob";
+
+            var tokenResponse = client.AcquireRequestToken(OAUTH_URL_GET_REQUEST_TOKEN, tokenRequest);
 
             // get url to authorize token
-            string url = client.GetAuthorizeTokenRedirectUrl(OAUTH_URL_AUTHORIZE_TOKEN, APPLICATION_NAME);
+            string url = client.GetAuthorizeTokenRedirectUrl(OAUTH_URL_AUTHORIZE_TOKEN, tokenResponse["token"], APPLICATION_NAME);
 
             // use WatiN to send "user" to approve access
             using (var browser = new IE(url))
@@ -89,10 +95,15 @@ namespace OAuthSharp.Tests
                 Assert.That(verifier, Is.Not.Null.Or.Empty);
 
                 // finally, get access token
-                client.AcquireAccessToken(OAUTH_URL_GET_ACCESS_TOKEN, "POST", token, client["token_secret"], verifier);
+                var accessRequest = new OAuthAccessTokenRequest(CONSUMER_KEY, CONSUMER_SECRET);
+                accessRequest.Token = token;
+                accessRequest.Verifier = verifier;
+                accessRequest.TokenSecret = tokenResponse["token_secret"];
 
-                Assert.That(client["token"], Is.Not.Null.Or.Empty);
-                Assert.That(client["token_secret"], Is.Not.Null.Or.Empty);
+                var accessResponse = client.AcquireAccessToken(OAUTH_URL_GET_ACCESS_TOKEN, accessRequest);
+
+                Assert.That(accessResponse["token"], Is.Not.Null.Or.Empty);
+                Assert.That(accessResponse["token_secret"], Is.Not.Null.Or.Empty);
 
                 // TODO: prove token is valid by calling API?
             }

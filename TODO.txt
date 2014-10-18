@@ -1,2 +1,4 @@
 Change _params to properties
 	client["token"] -> client.Token
+
+How to get response body from 500 server error?
