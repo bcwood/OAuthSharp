@@ -28,6 +28,7 @@ namespace OAuthSharp.Tests
             var response = client.AcquireRequestToken(OAUTH_URL_GET_REQUEST_TOKEN, request);
 
             Assert.That(response["oauth_token"], Is.Not.Null.Or.Empty);
+            Assert.That(response["oauth_token_secret"], Is.Not.Null.Or.Empty);
         }
 
         [Test]
