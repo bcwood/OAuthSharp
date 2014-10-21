@@ -21,17 +21,13 @@ namespace OAuthSharp.Tests
         [Test]
         public void AcquireRequestToken()
         {
-            var client = new OAuth1Client();
-            //client["consumer_key"] = CONSUMER_KEY;
-            //client["consumer_secret"] = CONSUMER_SECRET;
-            //client["callback"] = CALLBACK_URL;
-
             var request = new OAuthRequestTokenRequest(CONSUMER_KEY, CONSUMER_SECRET);
             request.ReturnUrl = CALLBACK_URL;
 
+            var client = new OAuth1Client();
             var response = client.AcquireRequestToken(OAUTH_URL_GET_REQUEST_TOKEN, request);
 
-            Assert.That(response["token"], Is.Not.Null.Or.Empty);
+            Assert.That(response["oauth_token"], Is.Not.Null.Or.Empty);
         }
 
         [Test]
