@@ -35,9 +35,6 @@ namespace OAuthSharp.Tests
         public void GetAuthorizeTokenRedirectUrl()
         {
             var client = new OAuth1Client();
-            //client["consumer_key"] = CONSUMER_KEY;
-            //client["consumer_secret"] = CONSUMER_SECRET;
-            //client["callback"] = CALLBACK_URL;
             const string TOKEN = "tempauthtoken";
 
             string url = client.GetAuthorizeTokenRedirectUrl(OAUTH_URL_AUTHORIZE_TOKEN, TOKEN, APPLICATION_NAME);
@@ -50,19 +47,15 @@ namespace OAuthSharp.Tests
         [Test]
         public void OAuthProcessInteractive()
         {
-            var client = new OAuth1Client();
-            //client["consumer_key"] = CONSUMER_KEY;
-            //client["consumer_secret"] = CONSUMER_SECRET;
-            //client["callback"] = "oob";
-
             // get request token
             var tokenRequest = new OAuthRequestTokenRequest(CONSUMER_KEY, CONSUMER_SECRET);
             tokenRequest.ReturnUrl = "oob";
 
+            var client = new OAuth1Client();
             var tokenResponse = client.AcquireRequestToken(OAUTH_URL_GET_REQUEST_TOKEN, tokenRequest);
 
             // get url to authorize token
-            string url = client.GetAuthorizeTokenRedirectUrl(OAUTH_URL_AUTHORIZE_TOKEN, tokenResponse["token"], APPLICATION_NAME);
+            string url = client.GetAuthorizeTokenRedirectUrl(OAUTH_URL_AUTHORIZE_TOKEN, tokenResponse["oauth_token"], APPLICATION_NAME);
 
             // use WatiN to send "user" to approve access
             using (var browser = new IE(url))
@@ -95,12 +88,12 @@ namespace OAuthSharp.Tests
                 var accessRequest = new OAuthAccessTokenRequest(CONSUMER_KEY, CONSUMER_SECRET);
                 accessRequest.Token = token;
                 accessRequest.Verifier = verifier;
-                accessRequest.TokenSecret = tokenResponse["token_secret"];
+                accessRequest.TokenSecret = tokenResponse["oauth_token_secret"];
 
                 var accessResponse = client.AcquireAccessToken(OAUTH_URL_GET_ACCESS_TOKEN, accessRequest);
 
-                Assert.That(accessResponse["token"], Is.Not.Null.Or.Empty);
-                Assert.That(accessResponse["token_secret"], Is.Not.Null.Or.Empty);
+                Assert.That(accessResponse["oauth_token"], Is.Not.Null.Or.Empty);
+                Assert.That(accessResponse["oauth_token_secret"], Is.Not.Null.Or.Empty);
 
                 // TODO: prove token is valid by calling API?
             }
