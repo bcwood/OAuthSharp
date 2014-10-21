@@ -6,7 +6,7 @@ using System.Text;
 
 namespace OAuthSharp
 {
-    public abstract class OAuthRequest : RequestParameters
+    public abstract class OAuth1Request : RequestParameters
     {
         public const string SIGNATURE_METHOD_SHA1 = "HMAC-SHA1";
         public const string SIGNATURE_METHOD_PLAINTEXT = "PLAINTEXT";
@@ -23,11 +23,14 @@ namespace OAuthSharp
         [Parameter(Key = "consumer_secret")]
         public string ConsumerSecret { get; protected set; }
 
+        /// <summary>
+        /// The signature method to use for the request (must be one of: PLAINTEXT, HMAC-SHA1)
+        /// </summary>
         [Parameter(Key = "signature_method")]
-        public string SignatureMethod { get; protected set; }
+        public string SignatureMethod { get; set; }
 
         [Parameter(Key = "signature")]
-        public string Signature { get; protected set; }
+        private string Signature { get; set; }
 
         [Parameter(Key = "token")]
         public string Token { get; set; }
@@ -36,9 +39,9 @@ namespace OAuthSharp
         public string TokenSecret { get; set; }
 
         [Parameter(Key = "version")]
-        public string Version { get; private set; }
+        private string Version { get; set; }
 
-        public OAuthRequest(string consumerKey, string consumerSecret)
+        public OAuth1Request(string consumerKey, string consumerSecret)
         {
             Ensure.ArgumentNotNullOrEmptyString(consumerKey, "consumerKey");
             Ensure.ArgumentNotNullOrEmptyString(consumerSecret, "consumerSecret");
@@ -52,6 +55,9 @@ namespace OAuthSharp
             this.TokenSecret = string.Empty;
         }
 
+        /// <summary>
+        /// Signs the request using the specified signature method.
+        /// </summary>
         internal void SignRequest(string url)
         {
             Ensure.ArgumentNotNullOrEmptyString(this.SignatureMethod, "SignatureMethod");
@@ -151,6 +157,9 @@ namespace OAuthSharp
             return result;
         }
 
+        /// <summary>
+        /// Calculates the necessary hash when using the HMAC-SHA1 signature method.
+        /// </summary>
         private HashAlgorithm GetHash()
         {
             if (this.SignatureMethod != SIGNATURE_METHOD_SHA1)
@@ -187,7 +196,7 @@ namespace OAuthSharp
         }
 
         /// <summary>
-        ///   This is an OAuth-compliant Url Encoder.  The default .NET
+        ///   This is an OAuth-compliant URL Encoder.  The default .NET
         ///   encoder outputs the percent encoding in lower case.  While this
         ///   is not a problem with the percent encoding defined in RFC 3986,
         ///   OAuth (RFC 5849) requires that the characters be upper case.

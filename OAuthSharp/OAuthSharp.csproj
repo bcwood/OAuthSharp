@@ -40,11 +40,11 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Ensure.cs" />
-    <Compile Include="OAuth1Client.cs" />
-    <Compile Include="OAuth1Response.cs" />
-    <Compile Include="OAuthAccessTokenRequest.cs" />
-    <Compile Include="OAuthRequest.cs" />
-    <Compile Include="OAuthRequestTokenRequest.cs" />
+    <Compile Include="v1\OAuth1Client.cs" />
+    <Compile Include="v1\OAuth1Response.cs" />
+    <Compile Include="v1\OAuth1AccessRequest.cs" />
+    <Compile Include="v1\OAuth1Request.cs" />
+    <Compile Include="v1\OAuth1TokenRequest.cs" />
     <Compile Include="Parameter.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="RequestParameters.cs" />

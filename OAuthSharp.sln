@@ -5,11 +5,6 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "OAuthSharp", "OAuthSharp\OA
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "OAuthSharp.Tests", "OAuthSharp.Tests\OAuthSharp.Tests.csproj", "{2992EC8D-5F14-4148-8281-175C0B168C6D}"
 EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{7381AE08-1499-4526-8EDD-C682F4FCFB10}"
-	ProjectSection(SolutionItems) = preProject
-		TODO.txt = TODO.txt
-	EndProjectSection
-EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU

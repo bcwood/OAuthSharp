@@ -21,7 +21,7 @@ namespace OAuthSharp.Tests
         [Test]
         public void AcquireRequestToken()
         {
-            var request = new OAuthRequestTokenRequest(CONSUMER_KEY, CONSUMER_SECRET);
+            var request = new OAuth1TokenRequest(CONSUMER_KEY, CONSUMER_SECRET);
             request.ReturnUrl = CALLBACK_URL;
 
             var client = new OAuth1Client();
@@ -44,11 +44,19 @@ namespace OAuthSharp.Tests
             Assert.That(url, Contains.Substring("&name=" + APPLICATION_NAME));
         }
 
+        /// <summary>
+        /// Tests the entire OAuth process, interactively in a web browser using WatiN.
+        /// Normally, I wouldn't include this kind of a test as  "unit" test, but it's
+        /// the only way of truly testing the last part of the process.
+        /// To perform the last part of the process, it is necessary to send the user's
+        /// browser to the appropriate URL (obtained from client.GetAuthorizeTokenRedirectUrl())
+        /// to have them login and authorize our application.
+        /// </summary>
         [Test]
         public void OAuthProcessInteractive()
         {
             // get request token
-            var tokenRequest = new OAuthRequestTokenRequest(CONSUMER_KEY, CONSUMER_SECRET);
+            var tokenRequest = new OAuth1TokenRequest(CONSUMER_KEY, CONSUMER_SECRET);
             tokenRequest.ReturnUrl = "oob";
 
             var client = new OAuth1Client();
@@ -85,7 +93,7 @@ namespace OAuthSharp.Tests
                 Assert.That(verifier, Is.Not.Null.Or.Empty);
 
                 // finally, get access token
-                var accessRequest = new OAuthAccessTokenRequest(CONSUMER_KEY, CONSUMER_SECRET);
+                var accessRequest = new OAuth1AccessRequest(CONSUMER_KEY, CONSUMER_SECRET);
                 accessRequest.Token = token;
                 accessRequest.Verifier = verifier;
                 accessRequest.TokenSecret = tokenResponse["oauth_token_secret"];

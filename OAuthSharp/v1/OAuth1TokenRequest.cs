@@ -1,6 +1,6 @@
 ﻿namespace OAuthSharp
 {
-    public class OAuthRequestTokenRequest : OAuthRequest
+    public class OAuth1TokenRequest : OAuth1Request
     {
         /// <summary>
         /// The URL in your application where users will be sent after authorization.
@@ -8,7 +8,7 @@
         [Parameter(Key = "callback")]
         public string ReturnUrl { get; set; }
 
-        public OAuthRequestTokenRequest(string consumerKey, string consumerSecret)
+        public OAuth1TokenRequest(string consumerKey, string consumerSecret)
             : base(consumerKey, consumerSecret)
         {
         }
