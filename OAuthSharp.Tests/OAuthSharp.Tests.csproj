@@ -62,11 +62,12 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Helpers\TestData.cs" />
     <Compile Include="Integration\v1\OAuth1IntegrationTests.cs" />
     <Compile Include="v1\OAuth1ClientTests.cs" />
     <Compile Include="v1\OAuth1TokenRequestTests.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="TextFieldExtended.cs" />
+    <Compile Include="Helpers\TextFieldExtended.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config">
