@@ -44,9 +44,9 @@
 	    {
 			get 
 			{ 
-				return string.Format("{0}&{1}", 
-									 UrlEncode(this.ConsumerSecret), 
-									 UrlEncode(this.TokenSecret)); 
+				return string.Format("{0}&{1}",
+									 OAuth1.UrlEncode(this.ConsumerSecret),
+									 OAuth1.UrlEncode(this.TokenSecret)); 
 			}
 	    }
     }

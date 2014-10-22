@@ -26,6 +26,8 @@
                     case "oauth_token_secret":
                         this.TokenSecret = parts[1];
                         break;
+
+					// TODO: collect any additional parameters, if present?
                 }
             }
         }

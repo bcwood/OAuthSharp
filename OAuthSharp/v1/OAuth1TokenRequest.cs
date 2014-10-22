@@ -27,11 +27,13 @@
 			Ensure.ArgumentNotNullOrEmptyString(returnUrl, "returnUrl");
 
             this.ReturnUrl = returnUrl;
+
+			// TODO: allow specifying additional parameters specific to an application (scope, expiration, etc.)
         }
 
 		protected override string HashKey
 	    {
-			get { return string.Format("{0}&", UrlEncode(this.ConsumerSecret)); }
+			get { return string.Format("{0}&", OAuth1.UrlEncode(this.ConsumerSecret)); }
 	    }
     }
 }

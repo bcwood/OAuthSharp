@@ -12,9 +12,10 @@ namespace OAuthSharp
         static readonly ConcurrentDictionary<Type, List<PropertyParameter>> _propertiesMap =
             new ConcurrentDictionary<Type, List<PropertyParameter>>();
 
-        public IDictionary<string, string> ToParametersDictionary()
+        public Dictionary<string, string> ToParametersDictionary()
         {
             var map = _propertiesMap.GetOrAdd(GetType(), GetPropertyParametersForType);
+
             return (from property in map
                     let value = property.GetValue(this)
                     let key = property.Key

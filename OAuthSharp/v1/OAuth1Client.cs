@@ -2,7 +2,11 @@
 
 namespace OAuthSharp
 {
-    public class OAuth1Client
+	/// <summary>
+	/// Client for authenticating with OAuth 1.0 services, as defined by RFC 5849.
+	/// Ref: http://tools.ietf.org/html/rfc5849
+	/// </summary>
+	public class OAuth1Client
     {
         /// <summary>
         /// Acquire an OAuth request token.
