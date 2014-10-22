@@ -8,8 +8,8 @@ namespace OAuthSharp
 {
     public abstract class OAuth1Request : RequestParameters
     {
-        public const string SIGNATURE_METHOD_PLAINTEXT = "PLAINTEXT";
-        public const string SIGNATURE_METHOD_SHA1 = "HMAC-SHA1";
+		//public const string SIGNATURE_METHOD_PLAINTEXT = "PLAINTEXT";
+		//public const string SIGNATURE_METHOD_SHA1 = "HMAC-SHA1";
         
         /// <summary>
         /// Your applicatin's key for consuming the API.
@@ -27,7 +27,7 @@ namespace OAuthSharp
         /// The signature method to use for the request (must be one of: PLAINTEXT, HMAC-SHA1)
         /// </summary>
         [Parameter(Key = "signature_method")]
-        public string SignatureMethod { get; set; }
+        public string SignatureMethodString { get; private set; }
 
         [Parameter(Key = "signature")]
         public string Signature { get; private set; }
@@ -41,6 +41,19 @@ namespace OAuthSharp
         [Parameter(Key = "version")]
         public string Version { get; private set; }
 
+	    private SignatureMethod _signatureMethod;
+
+	    public SignatureMethod SignatureMethod
+	    {
+			get { return _signatureMethod; }
+		    set 
+			{ 
+				_signatureMethod = value;
+				// convert the enum to the corresponding OAuth signature method string
+				this.SignatureMethodString = _signatureMethod.ToString().ToUpper().Replace("_", "-");
+			}
+	    }
+
         public OAuth1Request(string consumerKey, string consumerSecret)
         {
             Ensure.ArgumentNotNullOrEmptyString(consumerKey, "consumerKey");
@@ -48,7 +61,7 @@ namespace OAuthSharp
 
             this.ConsumerKey = consumerKey;
             this.ConsumerSecret = consumerSecret;
-            this.SignatureMethod = SIGNATURE_METHOD_PLAINTEXT;
+            this.SignatureMethod = SignatureMethod.Plaintext;
             this.Version = "1.0";
 
             this.Token = string.Empty;
@@ -60,24 +73,24 @@ namespace OAuthSharp
         /// </summary>
         internal void SignRequest(string url)
         {
-            Ensure.ArgumentNotNullOrEmptyString(this.SignatureMethod, "SignatureMethod");
+			switch (this.SignatureMethod)
+			{
+				case SignatureMethod.Plaintext:
+					this.Signature = string.Format("{0}&{1}",
+												   UrlEncode(this.ConsumerSecret),
+												   UrlEncode(this.TokenSecret));
+					break;
 
-            if (this.SignatureMethod == SIGNATURE_METHOD_SHA1)
-            {
-                var hash = this.GetHash();
-                string signatureBase = this.GetSignatureBase(url);
+				case SignatureMethod.Hmac_Sha1:
+					var hash = this.GetHash();
+					string signatureBase = this.GetSignatureBase(url);
 
-                byte[] dataBuffer = Encoding.ASCII.GetBytes(signatureBase);
-                byte[] hashBytes = hash.ComputeHash(dataBuffer);
+					byte[] dataBuffer = Encoding.ASCII.GetBytes(signatureBase);
+					byte[] hashBytes = hash.ComputeHash(dataBuffer);
 
-                this.Signature = Convert.ToBase64String(hashBytes);
-            }
-            else if (this.SignatureMethod == SIGNATURE_METHOD_PLAINTEXT)
-            {
-                this.Signature = string.Format("{0}&{1}",
-                                               UrlEncode(this.ConsumerSecret),
-                                               UrlEncode(this.TokenSecret));
-            }
+					this.Signature = Convert.ToBase64String(hashBytes);
+					break;
+			}
         }
 
         /// <summary>
@@ -161,7 +174,7 @@ namespace OAuthSharp
         /// </summary>
         private HashAlgorithm GetHash()
         {
-            if (this.SignatureMethod != SIGNATURE_METHOD_SHA1)
+			if (this.SignatureMethod != SignatureMethod.Hmac_Sha1)
                 throw new NotImplementedException("Hashing only implemented for HMAC-SHA1.");
 
             string keystring = string.Format("{0}&{1}",
@@ -217,4 +230,10 @@ namespace OAuthSharp
             return encoded.ToString();
         }
     }
+
+	public enum SignatureMethod
+	{
+		Plaintext,
+		Hmac_Sha1
+	}
 }
