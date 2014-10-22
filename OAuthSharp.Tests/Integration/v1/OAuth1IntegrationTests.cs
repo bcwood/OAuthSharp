@@ -55,10 +55,7 @@ namespace OAuthSharp.Tests.Integration
 				Assert.That(verifier, Is.Not.Null.Or.Empty);
 
 				// finally, get access token
-				var accessRequest = new OAuth1AccessRequest(TestData.CONSUMER_KEY, TestData.CONSUMER_SECRET);
-				accessRequest.Token = token;
-				accessRequest.Verifier = verifier;
-				accessRequest.TokenSecret = tokenResponse.TokenSecret;
+				var accessRequest = new OAuth1AccessRequest(TestData.CONSUMER_KEY, TestData.CONSUMER_SECRET, token, tokenResponse.TokenSecret, verifier);
 
 				var accessResponse = client.AcquireAccessToken(TestData.OAUTH_URL_GET_ACCESS_TOKEN, accessRequest);
 

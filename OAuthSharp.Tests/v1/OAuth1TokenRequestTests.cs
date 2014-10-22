@@ -7,6 +7,12 @@ namespace OAuthSharp.Tests
 	public class OAuth1TokenRequestTests
 	{
 		[Test]
+		public void Constructor_ValidParameters_DoesNotThrow()
+		{
+			Assert.DoesNotThrow(() => new OAuth1TokenRequest(TestData.CONSUMER_KEY, TestData.CONSUMER_SECRET, TestData.CALLBACK_URL));
+		}
+
+		[Test]
 		public void Constructor_NullParameter_ThrowsArgumentNullException()
 		{
 			Assert.Throws<ArgumentNullException>(() => new OAuth1TokenRequest(null, TestData.CONSUMER_SECRET, TestData.CALLBACK_URL));

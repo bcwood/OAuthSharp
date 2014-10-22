@@ -100,10 +100,7 @@ namespace OAuthSharp
         public OAuth1Response AcquireAccessToken(string oauthAccessTokenUrl, OAuth1AccessRequest accessRequest)
         {
             Ensure.ArgumentNotNullOrEmptyString(oauthAccessTokenUrl, "oauthAccessTokenUrl");
-            Ensure.ArgumentNotNullOrEmptyString(accessRequest.Token, "Token");
-            Ensure.ArgumentNotNullOrEmptyString(accessRequest.TokenSecret, "TokenSecret");
-            Ensure.ArgumentNotNullOrEmptyString(accessRequest.Verifier, "Verifier");
-
+            
             //NewRequest();
 
             // TODO: move the rest of this method into OAuth1Request base class
