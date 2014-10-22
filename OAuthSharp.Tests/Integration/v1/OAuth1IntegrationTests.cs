@@ -15,11 +15,13 @@ namespace OAuthSharp.Tests.Integration
 		/// the user's browser to the appropriate URL (obtained from client.GetAuthorizeTokenRedirectUrl())
 		/// to have them login and authorize the application.
 		/// </summary>
-		[Test]
-		public void OAuthProcessInteractive()
+		[TestCase(OAuth1Request.SIGNATURE_METHOD_PLAINTEXT, TestName = "PLAINTEXT")]
+		[TestCase(OAuth1Request.SIGNATURE_METHOD_HMAC_SHA1, TestName = "HMAC-SHA1")]
+		public void OAuthProcessInteractive(string signatureMethod)
 		{
 			// get request token
 			var tokenRequest = new OAuth1TokenRequest(TestData.CONSUMER_KEY, TestData.CONSUMER_SECRET, TestData.CALLBACK_URL_OUT_OF_BAND);
+			tokenRequest.SignatureMethod = signatureMethod;
 
 			var client = new OAuth1Client();
 			var tokenResponse = client.AcquireRequestToken(TestData.OAUTH_URL_GET_REQUEST_TOKEN, tokenRequest);
@@ -56,6 +58,7 @@ namespace OAuthSharp.Tests.Integration
 
 				// finally, get access token
 				var accessRequest = new OAuth1AccessRequest(TestData.CONSUMER_KEY, TestData.CONSUMER_SECRET, token, tokenResponse.TokenSecret, verifier);
+				accessRequest.SignatureMethod = signatureMethod;
 
 				var accessResponse = client.AcquireAccessToken(TestData.OAUTH_URL_GET_ACCESS_TOKEN, accessRequest);
 

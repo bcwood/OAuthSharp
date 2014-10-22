@@ -39,5 +39,15 @@
 			this.TokenSecret = tokenSecret;
 			this.Verifier = verifier;
 		}
+
+	    protected override string HashKey
+	    {
+			get 
+			{ 
+				return string.Format("{0}&{1}", 
+									 UrlEncode(this.ConsumerSecret), 
+									 UrlEncode(this.TokenSecret)); 
+			}
+	    }
     }
 }

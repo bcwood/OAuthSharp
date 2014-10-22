@@ -8,6 +8,13 @@
         [Parameter(Key = "callback")]
         public string ReturnUrl { get; private set; }
 
+		[Parameter(Key = "signature_method")]
+		public override string SignatureMethod
+	    {
+			// token request always uses plaintext, as there is no token_secret yet
+			get { return SIGNATURE_METHOD_PLAINTEXT; }
+	    }
+
 		/// <summary>
 		/// Initializes a new token request.
 		/// </summary>
@@ -21,5 +28,10 @@
 
             this.ReturnUrl = returnUrl;
         }
+
+		protected override string HashKey
+	    {
+			get { return string.Format("{0}&", UrlEncode(this.ConsumerSecret)); }
+	    }
     }
 }
