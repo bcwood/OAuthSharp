@@ -2,7 +2,14 @@
 {
     public class OAuth1Response
     {
+		/// <summary>
+		/// oauth_token parameter received from application.
+		/// </summary>
         public string Token { get; private set; }
+
+		/// <summary>
+		/// oauth_token_secret parameter received from application.
+		/// </summary>
         public string TokenSecret { get; private set; }
 
         public OAuth1Response(string response)

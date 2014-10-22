@@ -10,8 +10,11 @@ namespace OAuthSharp
 {
     public abstract class OAuth1Request : RequestParameters
     {
+	    public const string SIGNATURE_METHOD_PLAINTEXT = "PLAINTEXT";
+		public const string SIGNATURE_METHOD_HMAC_SHA1 = "HMAC-SHA1";
+
 		/// <summary>
-        /// Your applicatin's key for consuming the API.
+        /// Your application's key for consuming the API.
         /// </summary>
         [Parameter(Key = "consumer_key")]
         public string ConsumerKey { get; protected set; }
@@ -23,10 +26,10 @@ namespace OAuthSharp
         public string ConsumerSecret { get; protected set; }
 
         /// <summary>
-        /// The signature method to use for the request (must be one of: PLAINTEXT, HMAC-SHA1)
+        /// The signature method name to use for the request (must be one of: PLAINTEXT, HMAC-SHA1)
         /// </summary>
         [Parameter(Key = "signature_method")]
-        public string SignatureMethodString { get; private set; }
+		public string SignatureMethod { get; set; }
 
 		/// <summary>
 		/// The signature generated based on the specified SignatureMethod.
@@ -34,41 +37,44 @@ namespace OAuthSharp
         [Parameter(Key = "signature")]
         public string Signature { get; private set; }
 
+		/// <summary>
+		/// OAuth version (1.0).
+		/// </summary>
         [Parameter(Key = "version")]
-        public string Version { get; private set; }
+		protected string Version { get; private set; }
 
-	    private SignatureMethod _signatureMethod;
+		//private SignatureMethod _signatureMethod;
 
-	    public SignatureMethod SignatureMethod
-	    {
-			get { return _signatureMethod; }
-		    set 
-			{ 
-				_signatureMethod = value;
-				// convert the enum to the corresponding OAuth signature method string
-				this.SignatureMethodString = _signatureMethod.ToString().ToUpper().Replace("_", "-");
-			}
-	    }
+		///// <summary>
+		///// The signature method to use for the request.
+		///// </summary>
+		//public SignatureMethod SignatureMethod
+		//{
+		//	get { return _signatureMethod; }
+		//	set 
+		//	{ 
+		//		_signatureMethod = value;
+		//		// convert the enum to the corresponding OAuth signature method name
+		//		this.SignatureMethodName = _signatureMethod.ToString().ToUpper().Replace("_", "-");
+		//	}
+		//}
 
-        public OAuth1Request(string consumerKey, string consumerSecret)
+        protected OAuth1Request(string consumerKey, string consumerSecret)
         {
             Ensure.ArgumentNotNullOrEmptyString(consumerKey, "consumerKey");
             Ensure.ArgumentNotNullOrEmptyString(consumerSecret, "consumerSecret");
 
             this.ConsumerKey = consumerKey;
             this.ConsumerSecret = consumerSecret;
-            this.SignatureMethod = SignatureMethod.Plaintext;
+            this.SignatureMethod = SIGNATURE_METHOD_PLAINTEXT;
             this.Version = "1.0";
-
-			//this.Token = string.Empty;
-			//this.TokenSecret = string.Empty;
         }
 
 		/// <summary>
 		/// Submits the request to the specified <paramref name="url"/>.
 		/// </summary>
 		/// <param name="url">OAuth endpoint.</param>
-		/// <returns>OAuth1Response instance.</returns>
+		/// <returns><see cref="OAuth1Response" /> instance.</returns>
 		internal OAuth1Response SubmitRequest(string url)
 		{
 			var authHeader = GetAuthorizationHeader(url);
@@ -102,7 +108,7 @@ namespace OAuthSharp
 		}
 
 		/// <summary>
-		/// Generates the authorization header for the specified url and (optional) realm.
+		/// Generates the authorization header for the specified <paramref name="url"/> and (optional) <paramref name="realm"/>.
 		/// </summary>
 		private string GetAuthorizationHeader(string url, string realm = null)
 		{
@@ -127,11 +133,11 @@ namespace OAuthSharp
 
 			switch (this.SignatureMethod)
 			{
-				case SignatureMethod.Plaintext:
+				case SIGNATURE_METHOD_PLAINTEXT:
 					this.Signature = hashBase;
 					break;
 
-				case SignatureMethod.Hmac_Sha1:
+				case SIGNATURE_METHOD_HMAC_SHA1:
 					string signatureBase = this.GetSignatureBase(url);
 					byte[] dataBuffer = Encoding.ASCII.GetBytes(signatureBase);
 					
@@ -140,6 +146,9 @@ namespace OAuthSharp
 
 					this.Signature = Convert.ToBase64String(hashBytes);
 					break;
+
+				default:
+					throw new NotSupportedException("Unsupported signature method: " + this.SignatureMethod);
 			}
         }
 

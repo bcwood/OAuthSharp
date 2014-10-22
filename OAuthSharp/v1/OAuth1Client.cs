@@ -1,21 +1,15 @@
-﻿using System;
-using System.IO;
-using System.Net;
-using System.Text;
+﻿using System.Text;
 
 namespace OAuthSharp
 {
     public class OAuth1Client
     {
         /// <summary>
-        ///   Acquire an OAuth request token.
+        /// Acquire an OAuth request token.
         /// </summary>
         /// <param name="endpointUrl">OAuth request token endpoint.</param>
         /// <param name="tokenRequest">OAuthRequestTokenRequest instance.</param>
-        /// <returns>
-        ///   An OAuth1Response instance that contains the entire text of the response,
-        ///   as well as any additional extracted parameters.
-        /// </returns>
+        /// <returns><see cref="OAuth1Response"/> instance.</returns>
 		public OAuth1Response AcquireRequestToken(string endpointUrl, OAuth1TokenRequest tokenRequest)
         {
 			Ensure.ArgumentNotNullOrEmptyString(endpointUrl, "endpointUrl");
@@ -29,6 +23,7 @@ namespace OAuthSharp
 		/// <param name="endpointUrl">OAuth authorize token endpoint.</param>
         /// <param name="token">Token received from previous call to AcquireRequestToken.</param>
         /// <param name="applicationName">Your application's name, to be presented to the user when asking for authorization.</param>
+        /// <returns>The URL to redirect users to for authorization.</returns>
 		public string GetAuthorizeTokenRedirectUrl(string endpointUrl, string token, string applicationName = null)
         {
 			Ensure.ArgumentNotNullOrEmptyString(endpointUrl, "endpointUrl");
@@ -44,14 +39,11 @@ namespace OAuthSharp
         }
 
         /// <summary>
-        ///   Acquire an OAuth access token.
+        /// Acquire an OAuth access token.
         /// </summary>
 		/// <param name="endpointUrl">OAuth access token endpoint.</param>
         /// <param name="accessRequest">OAuthAccessTokenRequest instance.</param>
-        /// <returns>
-        ///   An OAuth1Response instance that contains the entire text of the response,
-        ///   as well as any additional extracted parameters.
-        /// </returns>
+		/// <returns><see cref="OAuth1Response"/> instance.</returns>
 		public OAuth1Response AcquireAccessToken(string endpointUrl, OAuth1AccessRequest accessRequest)
         {
 			Ensure.ArgumentNotNullOrEmptyString(endpointUrl, "endpointUrl");
