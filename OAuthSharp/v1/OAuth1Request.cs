@@ -70,6 +70,11 @@ namespace OAuthSharp
             this.TokenSecret = string.Empty;
         }
 
+		/// <summary>
+		/// Submits the request to the specified <paramref name="url"/>.
+		/// </summary>
+		/// <param name="url">OAuth endpoint.</param>
+		/// <returns>OAuth1Response instance.</returns>
 		internal OAuth1Response SubmitRequest(string url)
 		{
 			var authHeader = GetAuthorizationHeader(url);
@@ -147,17 +152,15 @@ namespace OAuthSharp
 		private HashAlgorithm GetHash()
 		{
 			if (this.SignatureMethod != SignatureMethod.Hmac_Sha1)
-				throw new NotImplementedException("Hashing only implemented for HMAC-SHA1.");
+				throw new NotSupportedException("Hashing is only supported for the HMAC-SHA1 signature method.");
 
-			string keystring = string.Format("{0}&{1}",
-											 UrlEncode(this.ConsumerSecret),
-											 UrlEncode(this.TokenSecret));
-			var hmacsha1 = new HMACSHA1
-			{
-				Key = Encoding.ASCII.GetBytes(keystring)
-			};
-
-			return hmacsha1;
+			string key = string.Format("{0}&{1}",
+									   UrlEncode(this.ConsumerSecret),
+									   UrlEncode(this.TokenSecret));
+			return new HMACSHA1
+				{
+					Key = Encoding.ASCII.GetBytes(key)
+				};
 		}
 
         /// <summary>
