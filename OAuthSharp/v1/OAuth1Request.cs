@@ -73,7 +73,7 @@ namespace OAuthSharp
 			if (this.SignatureMethod == SIGNATURE_METHOD_HMAC_SHA1)
 			{
 				this.Nonce = OAuth1.GenerateNonce();
-				this.Timestamp = OAuth1.GenerateTimeStamp();
+				this.Timestamp = OAuth1.GenerateTimestamp().ToString();
 			}
 
 			this.Signature = OAuth1.GetSignature(url, this.ToParametersDictionary(), this.SignatureMethod, this.HashKey);

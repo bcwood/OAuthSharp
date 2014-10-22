@@ -35,5 +35,13 @@ namespace OAuthSharp.Tests
 			Assert.Throws<ArgumentException>(() => new OAuth1AccessRequest(TestData.CONSUMER_KEY, TestData.CONSUMER_SECRET, TOKEN, string.Empty, VERIFIER));
 			Assert.Throws<ArgumentException>(() => new OAuth1AccessRequest(TestData.CONSUMER_KEY, TestData.CONSUMER_SECRET, TOKEN, TOKEN_SECRET, string.Empty));
 		}
+
+		//[Test]
+		//public void HashKey_ReturnsConsumerSecretAmpersandTokenSecret()
+		//{
+		//	var request = new OAuth1AccessRequest(TestData.CONSUMER_KEY, TestData.CONSUMER_SECRET, TOKEN, TOKEN_SECRET, VERIFIER);
+
+		//	Assert.That(request.HashKey, Is.EqualTo(string.Format("{0}&{1}", TestData.CONSUMER_SECRET, TOKEN_SECRET)));
+		//}
 	}
 }

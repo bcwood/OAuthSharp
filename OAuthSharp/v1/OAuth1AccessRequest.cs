@@ -40,7 +40,7 @@
 			this.Verifier = verifier;
 		}
 
-	    protected override string HashKey
+		protected override string HashKey
 	    {
 			get 
 			{ 

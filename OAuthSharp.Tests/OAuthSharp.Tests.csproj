@@ -66,6 +66,7 @@
     <Compile Include="Integration\v1\OAuth1IntegrationTests.cs" />
     <Compile Include="v1\OAuth1AccessRequestTests.cs" />
     <Compile Include="v1\OAuth1ClientTests.cs" />
+    <Compile Include="v1\OAuth1Tests.cs" />
     <Compile Include="v1\OAuth1TokenRequestTests.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Helpers\TextFieldExtended.cs" />

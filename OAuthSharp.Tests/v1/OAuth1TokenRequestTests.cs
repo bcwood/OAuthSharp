@@ -27,5 +27,13 @@ namespace OAuthSharp.Tests
 			Assert.Throws<ArgumentException>(() => new OAuth1TokenRequest(TestData.CONSUMER_KEY, string.Empty, TestData.CALLBACK_URL));
 			Assert.Throws<ArgumentException>(() => new OAuth1TokenRequest(TestData.CONSUMER_KEY, TestData.CONSUMER_SECRET, string.Empty));
 		}
+
+		//[Test]
+		//public void HashKey_ReturnsConsumerSecretAmpersand()
+		//{
+		//	var request = new OAuth1TokenRequest(TestData.CONSUMER_KEY, TestData.CONSUMER_SECRET, TestData.CALLBACK_URL);
+
+		//	Assert.That(request.HashKey, Is.EqualTo(string.Format("{0}&", TestData.CONSUMER_SECRET)));
+		//}
 	}
 }

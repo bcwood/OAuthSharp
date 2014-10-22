@@ -10,7 +10,7 @@ namespace OAuthSharp
 	/// Utility class used for implementing OAuth 1.0 spec, as defined by RFC 5849.
 	/// Ref: http://tools.ietf.org/html/rfc5849
 	/// </summary>
-	internal static class OAuth1
+	public static class OAuth1
 	{
 		/// <summary>
 		/// Generates an OAuth-compliant nonce.
@@ -34,11 +34,11 @@ namespace OAuthSharp
 		/// the timestamp is expressed in the number of seconds since January 1, 1970 00:00:00 GMT.
 		/// </summary>
 		/// <returns>OAuth-compliant timestamp</returns>
-		public static string GenerateTimeStamp()
+		public static long GenerateTimestamp()
 		{
 			DateTime epoch = new DateTime(1970, 1, 1, 0, 0, 0, 0);
 			TimeSpan ts = DateTime.UtcNow - epoch;
-			return Convert.ToInt64(ts.TotalSeconds).ToString();
+			return Convert.ToInt64(ts.TotalSeconds);
 		}
 
 		/// <summary>
@@ -53,7 +53,6 @@ namespace OAuthSharp
 					return hashKey;
 
 				case OAuth1Request.SIGNATURE_METHOD_HMAC_SHA1:
-
 					string signatureBase = OAuth1.GetSignatureBase(url, parameters);
 					byte[] signatureBytes = Encoding.ASCII.GetBytes(signatureBase);
 
@@ -73,20 +72,11 @@ namespace OAuthSharp
 		/// </summary>
 		private static string GetSignatureBase(string url, Dictionary<string, string> parameters)
 		{
-			// normalize the URI
-			var uri = new Uri(url);
-			var normUrl = String.Format("{0}://{1}", uri.Scheme, uri.Host);
-
-			if (!((uri.Scheme == "http" && uri.Port == 80) || (uri.Scheme == "https" && uri.Port == 443)))
-				normUrl += ":" + uri.Port;
-
-			normUrl += uri.AbsolutePath;
-
-			// the sigbase starts with the method and the encoded URI
+			// start with the method and the encoded URI
 			var sb = new StringBuilder();
-			sb.AppendFormat("POST&{0}&", UrlEncode(normUrl));
+			sb.AppendFormat("POST&{0}&", OAuth1.UrlEncode(OAuth1.NormalizeUrl(url)));
 
-			Dictionary<string, string> queryParams = ExtractQueryParameters(uri.Query);
+			Dictionary<string, string> queryParams = OAuth1.ExtractQueryParameters(url);
 
 			foreach (var param in parameters)
 			{
@@ -101,16 +91,34 @@ namespace OAuthSharp
 
 			// concat params
 			var paramBuilder = new StringBuilder();
-			foreach (var item in queryParams.OrderBy(x => x.Key))
+			foreach (var item in queryParams.OrderBy(p => p.Key))
 			{
 				// even "empty" params need to be encoded this way.
 				paramBuilder.AppendFormat("{0}={1}&", item.Key, item.Value);
 			}
 
 			// append the UrlEncoded version of that string to the sigbase
-			sb.Append(UrlEncode(paramBuilder.ToString().TrimEnd('&')));
+			sb.Append(OAuth1.UrlEncode(paramBuilder.ToString().TrimEnd('&')));
 
 			return sb.ToString();
+		}
+
+		/// <summary>
+		/// Normalizes a URL for use in the OAuth "signature base" string.
+		/// (ref: http://tools.ietf.org/html/rfc5849#section-3.4.1.2)
+		/// </summary>
+		public static string NormalizeUrl(string url)
+		{
+			var uri = new Uri(url);
+			var normalizedUrl = string.Format("{0}://{1}", uri.Scheme, uri.Host);
+
+			// append non-standard port
+			if (!((uri.Scheme == "http" && uri.Port == 80) || (uri.Scheme == "https" && uri.Port == 443)))
+				normalizedUrl += ":" + uri.Port;
+
+			normalizedUrl += uri.AbsolutePath;
+
+			return normalizedUrl;
 		}
 
 		/// <summary>
@@ -119,7 +127,7 @@ namespace OAuthSharp
 		/// </summary>
 		public static string GetAuthorizationHeader(Dictionary<string, string> parameters, string realm = null)
 		{
-			string encodedParams = OAuth1.EncodeRequestParameters(parameters);
+			string encodedParams = OAuth1.EncodeParameters(parameters);
 
 			return (string.IsNullOrEmpty(realm))
 				       ? "OAuth " + encodedParams
@@ -159,7 +167,7 @@ namespace OAuthSharp
 		/// <summary>
 		/// Encodes the list of request parameters suitable for use in the Authorization header of the request.
 		/// </summary>
-		private static string EncodeRequestParameters(Dictionary<string, string> parameters)
+		private static string EncodeParameters(Dictionary<string, string> parameters)
 		{
 			var sb = new StringBuilder();
 
@@ -178,8 +186,11 @@ namespace OAuthSharp
 		/// Extracts all query string parameters from a URL that are not related to OAuth (not beginning with "oauth_").
 		/// </summary>
 		/// <returns>Parameter Dictionary</returns>
-		private static Dictionary<string, string> ExtractQueryParameters(string queryString)
+		private static Dictionary<string, string> ExtractQueryParameters(string url)
 		{
+			var uri = new Uri(url);
+			string queryString = uri.Query;
+
 			if (queryString.StartsWith("?"))
 				queryString = queryString.Remove(0, 1);
 
