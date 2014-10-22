@@ -1,7 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-
-namespace OAuthSharp
+﻿namespace OAuthSharp
 {
     public class OAuth1Response
     {
