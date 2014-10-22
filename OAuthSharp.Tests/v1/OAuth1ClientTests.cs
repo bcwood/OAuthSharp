@@ -6,7 +6,7 @@ namespace OAuthSharp.Tests
     public class OAuth1ClientTests
     {
         [Test]
-        public void AcquireRequestToken()
+        public void AcquireRequestToken_ResponseContains_TokenAndTokenSecret()
         {
 			var request = new OAuth1TokenRequest(TestData.CONSUMER_KEY, TestData.CONSUMER_SECRET, TestData.CALLBACK_URL);
 
@@ -18,7 +18,7 @@ namespace OAuthSharp.Tests
         }
 
         [Test]
-        public void GetAuthorizeTokenRedirectUrl()
+        public void GetAuthorizeTokenRedirectUrl_UrlContains_OAuthTokenAndApplicationName()
         {
             const string TOKEN = "tempauthtoken";
 
