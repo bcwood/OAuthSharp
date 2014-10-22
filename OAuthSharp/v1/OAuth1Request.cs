@@ -8,9 +8,9 @@ namespace OAuthSharp
 {
     public abstract class OAuth1Request : RequestParameters
     {
-        public const string SIGNATURE_METHOD_SHA1 = "HMAC-SHA1";
         public const string SIGNATURE_METHOD_PLAINTEXT = "PLAINTEXT";
-
+        public const string SIGNATURE_METHOD_SHA1 = "HMAC-SHA1";
+        
         /// <summary>
         /// Your applicatin's key for consuming the API.
         /// </summary>
@@ -30,7 +30,7 @@ namespace OAuthSharp
         public string SignatureMethod { get; set; }
 
         [Parameter(Key = "signature")]
-        private string Signature { get; set; }
+        public string Signature { get; private set; }
 
         [Parameter(Key = "token")]
         public string Token { get; set; }
@@ -39,7 +39,7 @@ namespace OAuthSharp
         public string TokenSecret { get; set; }
 
         [Parameter(Key = "version")]
-        private string Version { get; set; }
+        public string Version { get; private set; }
 
         public OAuth1Request(string consumerKey, string consumerSecret)
         {
@@ -62,11 +62,10 @@ namespace OAuthSharp
         {
             Ensure.ArgumentNotNullOrEmptyString(this.SignatureMethod, "SignatureMethod");
 
-            string signatureBase = this.GetSignatureBase(url);
-
             if (this.SignatureMethod == SIGNATURE_METHOD_SHA1)
             {
                 var hash = this.GetHash();
+                string signatureBase = this.GetSignatureBase(url);
 
                 byte[] dataBuffer = Encoding.ASCII.GetBytes(signatureBase);
                 byte[] hashBytes = hash.ComputeHash(dataBuffer);
