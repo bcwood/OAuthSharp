@@ -43,22 +43,6 @@ namespace OAuthSharp
         [Parameter(Key = "version")]
 		protected string Version { get; private set; }
 
-		//private SignatureMethod _signatureMethod;
-
-		///// <summary>
-		///// The signature method to use for the request.
-		///// </summary>
-		//public SignatureMethod SignatureMethod
-		//{
-		//	get { return _signatureMethod; }
-		//	set 
-		//	{ 
-		//		_signatureMethod = value;
-		//		// convert the enum to the corresponding OAuth signature method name
-		//		this.SignatureMethodName = _signatureMethod.ToString().ToUpper().Replace("_", "-");
-		//	}
-		//}
-
         protected OAuth1Request(string consumerKey, string consumerSecret)
         {
             Ensure.ArgumentNotNullOrEmptyString(consumerKey, "consumerKey");
