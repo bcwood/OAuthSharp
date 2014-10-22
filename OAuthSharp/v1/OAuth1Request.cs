@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
+using System.Net;
 using System.Security.Cryptography;
 using System.Text;
 
@@ -68,10 +70,56 @@ namespace OAuthSharp
             this.TokenSecret = string.Empty;
         }
 
+		internal OAuth1Response SubmitRequest(string url)
+		{
+			var authHeader = GetAuthorizationHeader(url);
+
+			var request = (HttpWebRequest) WebRequest.Create(url);
+			request.Headers.Add("Authorization", authHeader);
+			request.Method = "POST";
+
+			try
+			{
+				using (var response = (HttpWebResponse) request.GetResponse())
+				{
+					using (var reader = new StreamReader(response.GetResponseStream()))
+					{
+						return new OAuth1Response(reader.ReadToEnd());
+					}
+				}
+			}
+			catch (WebException ex)
+			{
+				// get response body in case of 500 server error
+				using (var stream = ex.Response.GetResponseStream())
+				{
+					using (var reader = new StreamReader(stream))
+					{
+						string errorMessage = reader.ReadToEnd();
+						throw new WebException(ex.Message + " (" + errorMessage + ")", ex);
+					}
+				}
+			}
+		}
+
+		/// <summary>
+		/// Generates the authorization header for the specified url and (optional) realm.
+		/// </summary>
+		private string GetAuthorizationHeader(string url, string realm = null)
+		{
+			this.SignRequest(url);
+
+			string encodedParams = this.EncodeRequestParameters();
+
+			return (string.IsNullOrEmpty(realm))
+				? "OAuth " + encodedParams
+				: string.Format("OAuth realm=\"{0}\", {1}", realm, encodedParams);
+		}
+
         /// <summary>
-        /// Signs the request using the specified signature method.
+        /// Signs the request using the appropriate signature method.
         /// </summary>
-        internal void SignRequest(string url)
+        private void SignRequest(string url)
         {
 			switch (this.SignatureMethod)
 			{
@@ -92,6 +140,25 @@ namespace OAuthSharp
 					break;
 			}
         }
+
+		/// <summary>
+		/// Calculates the necessary hash when using the HMAC-SHA1 signature method.
+		/// </summary>
+		private HashAlgorithm GetHash()
+		{
+			if (this.SignatureMethod != SignatureMethod.Hmac_Sha1)
+				throw new NotImplementedException("Hashing only implemented for HMAC-SHA1.");
+
+			string keystring = string.Format("{0}&{1}",
+											 UrlEncode(this.ConsumerSecret),
+											 UrlEncode(this.TokenSecret));
+			var hmacsha1 = new HMACSHA1
+			{
+				Key = Encoding.ASCII.GetBytes(keystring)
+			};
+
+			return hmacsha1;
+		}
 
         /// <summary>
         /// Formats the list of request parameters into "signature base" string as
@@ -167,25 +234,6 @@ namespace OAuthSharp
             }
 
             return result;
-        }
-
-        /// <summary>
-        /// Calculates the necessary hash when using the HMAC-SHA1 signature method.
-        /// </summary>
-        private HashAlgorithm GetHash()
-        {
-			if (this.SignatureMethod != SignatureMethod.Hmac_Sha1)
-                throw new NotImplementedException("Hashing only implemented for HMAC-SHA1.");
-
-            string keystring = string.Format("{0}&{1}",
-                                             UrlEncode(this.ConsumerSecret),
-                                             UrlEncode(this.TokenSecret));
-            var hmacsha1 = new HMACSHA1
-            {
-                Key = Encoding.ASCII.GetBytes(keystring)
-            };
-
-            return hmacsha1;
         }
 
         /// <summary>

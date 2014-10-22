@@ -30,42 +30,10 @@ namespace OAuthSharp
         public OAuth1Response AcquireRequestToken(string oauthTokenRequestUrl, OAuth1TokenRequest tokenRequest)
         {
             Ensure.ArgumentNotNullOrEmptyString(oauthTokenRequestUrl, "oauthTokenRequestUrl");
-            Ensure.ArgumentNotNullOrEmptyString(tokenRequest.ConsumerKey, "ConsumerKey");
-            Ensure.ArgumentNotNullOrEmptyString(tokenRequest.ConsumerSecret, "ConsumerSecret");
-            Ensure.ArgumentNotNullOrEmptyString(tokenRequest.ReturnUrl, "ReturnUrl");
 
             //NewRequest();
 
-            // TODO: move the rest of this method into OAuth1Request base class
-            var authHeader = GetAuthorizationHeader(oauthTokenRequestUrl, tokenRequest);
-
-            // prepare the token request
-            var request = (HttpWebRequest) WebRequest.Create(oauthTokenRequestUrl);
-            request.Headers.Add("Authorization", authHeader);
-            request.Method = "POST";
-
-            try
-            {
-                using (var response = (HttpWebResponse)request.GetResponse())
-                {
-                    using (var reader = new StreamReader(response.GetResponseStream()))
-                    {
-                        return new OAuth1Response(reader.ReadToEnd());
-                    }
-                }
-            }
-            catch (WebException ex)
-            {
-                // get response body in case of 500 server error
-                using (var stream = ex.Response.GetResponseStream())
-                {
-                    using (var reader = new StreamReader(stream))
-                    {
-                        string errorMessage = reader.ReadToEnd();
-                        throw new WebException(ex.Message + " (" + errorMessage + ")", ex);
-                    }
-                }
-            }
+			return tokenRequest.SubmitRequest(oauthTokenRequestUrl);
         }
 
         /// <summary>
@@ -103,47 +71,7 @@ namespace OAuthSharp
             
             //NewRequest();
 
-            // TODO: move the rest of this method into OAuth1Request base class
-            var authHeader = GetAuthorizationHeader(oauthAccessTokenUrl, accessRequest);
-
-            // prepare the token request
-            var request = (HttpWebRequest) WebRequest.Create(oauthAccessTokenUrl);
-            request.Headers.Add("Authorization", authHeader);
-            request.Method = "POST";
-
-            try
-            {
-                using (var response = (HttpWebResponse) request.GetResponse())
-                {
-                    using (var reader = new StreamReader(response.GetResponseStream()))
-                    {
-                        return new OAuth1Response(reader.ReadToEnd());
-                    }
-                }
-            }
-            catch (WebException ex)
-            {
-                // get response body in case of 500 server error
-                using (var stream = ex.Response.GetResponseStream())
-                {
-                    using (var reader = new StreamReader(stream))
-                    {
-                        string errorMessage = reader.ReadToEnd();
-                        throw new WebException(ex.Message + " (" + errorMessage + ")", ex);
-                    }
-                }
-            }
-        }
-
-        private string GetAuthorizationHeader(string url, OAuth1Request oauthRequest, string realm = null)
-        {
-            oauthRequest.SignRequest(url);
-
-            string encodedParams = oauthRequest.EncodeRequestParameters();
-
-            return (string.IsNullOrEmpty(realm))
-                ? "OAuth " + encodedParams
-                : string.Format("OAuth realm=\"{0}\", {1}", realm, encodedParams);
+	        return accessRequest.SubmitRequest(oauthAccessTokenUrl);
         }
 
         //private string GenerateTimeStamp()
