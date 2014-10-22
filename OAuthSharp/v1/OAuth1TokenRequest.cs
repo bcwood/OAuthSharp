@@ -11,6 +11,8 @@
         public OAuth1TokenRequest(string consumerKey, string consumerSecret, string returnUrl)
             : base(consumerKey, consumerSecret)
         {
+			Ensure.ArgumentNotNullOrEmptyString(returnUrl, "returnUrl");
+
             this.ReturnUrl = returnUrl;
         }
     }
