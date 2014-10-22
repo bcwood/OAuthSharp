@@ -50,7 +50,7 @@ namespace OAuthSharp
 		/// OAuth version (1.0).
 		/// </summary>
         [Parameter(Key = "version")]
-		protected string Version { get; private set; }
+		public string Version { get; private set; }
 
         protected OAuth1Request(string consumerKey, string consumerSecret)
         {
