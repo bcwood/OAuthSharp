@@ -6,11 +6,12 @@
         /// The URL in your application where users will be sent after authorization.
         /// </summary>
         [Parameter(Key = "callback")]
-        public string ReturnUrl { get; set; }
+        public string ReturnUrl { get; private set; }
 
-        public OAuth1TokenRequest(string consumerKey, string consumerSecret)
+        public OAuth1TokenRequest(string consumerKey, string consumerSecret, string returnUrl)
             : base(consumerKey, consumerSecret)
         {
+            this.ReturnUrl = returnUrl;
         }
     }
 }

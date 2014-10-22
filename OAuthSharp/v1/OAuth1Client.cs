@@ -1,4 +1,5 @@
-﻿using System.IO;
+﻿using System;
+using System.IO;
 using System.Net;
 using System.Text;
 
@@ -34,6 +35,8 @@ namespace OAuthSharp
             Ensure.ArgumentNotNullOrEmptyString(tokenRequest.ReturnUrl, "ReturnUrl");
 
             //NewRequest();
+
+            // TODO: move the rest of this method into OAuth1Request base class
             var authHeader = GetAuthorizationHeader(oauthTokenRequestUrl, tokenRequest);
 
             // prepare the token request
@@ -41,12 +44,26 @@ namespace OAuthSharp
             request.Headers.Add("Authorization", authHeader);
             request.Method = "POST";
 
-            // TODO: how to get response body from 500 server error?
-            using (var response = (HttpWebResponse)request.GetResponse())
+            try
             {
-                using (var reader = new StreamReader(response.GetResponseStream()))
+                using (var response = (HttpWebResponse)request.GetResponse())
                 {
-                    return new OAuth1Response(reader.ReadToEnd());
+                    using (var reader = new StreamReader(response.GetResponseStream()))
+                    {
+                        return new OAuth1Response(reader.ReadToEnd());
+                    }
+                }
+            }
+            catch (WebException ex)
+            {
+                // get response body in case of 500 server error
+                using (var stream = ex.Response.GetResponseStream())
+                {
+                    using (var reader = new StreamReader(stream))
+                    {
+                        string errorMessage = reader.ReadToEnd();
+                        throw new WebException(ex.Message + " (" + errorMessage + ")", ex);
+                    }
                 }
             }
         }
@@ -89,6 +106,7 @@ namespace OAuthSharp
 
             //NewRequest();
 
+            // TODO: move the rest of this method into OAuth1Request base class
             var authHeader = GetAuthorizationHeader(oauthAccessTokenUrl, accessRequest);
 
             // prepare the token request
@@ -96,12 +114,26 @@ namespace OAuthSharp
             request.Headers.Add("Authorization", authHeader);
             request.Method = "POST";
 
-            // TODO: how to get response body from 500 server error?
-            using (var response = (HttpWebResponse) request.GetResponse())
+            try
             {
-                using (var reader = new StreamReader(response.GetResponseStream()))
+                using (var response = (HttpWebResponse) request.GetResponse())
                 {
-                    return new OAuth1Response(reader.ReadToEnd());
+                    using (var reader = new StreamReader(response.GetResponseStream()))
+                    {
+                        return new OAuth1Response(reader.ReadToEnd());
+                    }
+                }
+            }
+            catch (WebException ex)
+            {
+                // get response body in case of 500 server error
+                using (var stream = ex.Response.GetResponseStream())
+                {
+                    using (var reader = new StreamReader(stream))
+                    {
+                        string errorMessage = reader.ReadToEnd();
+                        throw new WebException(ex.Message + " (" + errorMessage + ")", ex);
+                    }
                 }
             }
         }

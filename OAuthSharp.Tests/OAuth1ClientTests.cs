@@ -12,6 +12,7 @@ namespace OAuthSharp.Tests
         private const string CONSUMER_KEY = "91863bdb08a340af84f6f99b2c03f72c";
         private const string CONSUMER_SECRET = "2073c6272728ed8d5844e9f92a9f73941efd9ca09909bbaf2b3ea29cc52b0c4c";
         private const string CALLBACK_URL = "http://localhost/oauth_callback";
+        private const string CALLBACK_URL_OUT_OF_BAND = "oob";
         private const string APPLICATION_NAME = "OAuthSharp";
 
         private const string OAUTH_URL_GET_REQUEST_TOKEN = "https://trello.com/1/OAuthGetRequestToken";
@@ -21,22 +22,21 @@ namespace OAuthSharp.Tests
         [Test]
         public void AcquireRequestToken()
         {
-            var request = new OAuth1TokenRequest(CONSUMER_KEY, CONSUMER_SECRET);
-            request.ReturnUrl = CALLBACK_URL;
+            var request = new OAuth1TokenRequest(CONSUMER_KEY, CONSUMER_SECRET, CALLBACK_URL);
 
             var client = new OAuth1Client();
             var response = client.AcquireRequestToken(OAUTH_URL_GET_REQUEST_TOKEN, request);
 
-            Assert.That(response["oauth_token"], Is.Not.Null.Or.Empty);
-            Assert.That(response["oauth_token_secret"], Is.Not.Null.Or.Empty);
+            Assert.That(response.Token, Is.Not.Null.Or.Empty);
+            Assert.That(response.TokenSecret, Is.Not.Null.Or.Empty);
         }
 
         [Test]
         public void GetAuthorizeTokenRedirectUrl()
         {
-            var client = new OAuth1Client();
             const string TOKEN = "tempauthtoken";
 
+            var client = new OAuth1Client();
             string url = client.GetAuthorizeTokenRedirectUrl(OAUTH_URL_AUTHORIZE_TOKEN, TOKEN, APPLICATION_NAME);
 
             Assert.That(url, Is.Not.Null.Or.Empty);
@@ -56,14 +56,13 @@ namespace OAuthSharp.Tests
         public void OAuthProcessInteractive()
         {
             // get request token
-            var tokenRequest = new OAuth1TokenRequest(CONSUMER_KEY, CONSUMER_SECRET);
-            tokenRequest.ReturnUrl = "oob";
+            var tokenRequest = new OAuth1TokenRequest(CONSUMER_KEY, CONSUMER_SECRET, CALLBACK_URL_OUT_OF_BAND);
 
             var client = new OAuth1Client();
             var tokenResponse = client.AcquireRequestToken(OAUTH_URL_GET_REQUEST_TOKEN, tokenRequest);
 
             // get url to authorize token
-            string url = client.GetAuthorizeTokenRedirectUrl(OAUTH_URL_AUTHORIZE_TOKEN, tokenResponse["oauth_token"], APPLICATION_NAME);
+            string url = client.GetAuthorizeTokenRedirectUrl(OAUTH_URL_AUTHORIZE_TOKEN, tokenResponse.Token, APPLICATION_NAME);
 
             // use WatiN to send "user" to approve access
             using (var browser = new IE(url))
@@ -96,12 +95,12 @@ namespace OAuthSharp.Tests
                 var accessRequest = new OAuth1AccessRequest(CONSUMER_KEY, CONSUMER_SECRET);
                 accessRequest.Token = token;
                 accessRequest.Verifier = verifier;
-                accessRequest.TokenSecret = tokenResponse["oauth_token_secret"];
+                accessRequest.TokenSecret = tokenResponse.TokenSecret;
 
                 var accessResponse = client.AcquireAccessToken(OAUTH_URL_GET_ACCESS_TOKEN, accessRequest);
 
-                Assert.That(accessResponse["oauth_token"], Is.Not.Null.Or.Empty);
-                Assert.That(accessResponse["oauth_token_secret"], Is.Not.Null.Or.Empty);
+                Assert.That(accessResponse.Token, Is.Not.Null.Or.Empty);
+                Assert.That(accessResponse.TokenSecret, Is.Not.Null.Or.Empty);
 
                 // TODO: prove token is valid by calling API?
             }
