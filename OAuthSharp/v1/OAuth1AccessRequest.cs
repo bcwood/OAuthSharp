@@ -2,6 +2,12 @@
 {
     public class OAuth1AccessRequest : OAuth1Request
     {
+		[Parameter(Key = "token")]
+		public string Token { get; set; }
+
+		[Parameter(Key = "token_secret")]
+		public string TokenSecret { get; set; }
+
         [Parameter(Key = "verifier")]
         public string Verifier { get; set; }
 

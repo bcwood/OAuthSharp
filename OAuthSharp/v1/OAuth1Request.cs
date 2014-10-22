@@ -28,14 +28,11 @@ namespace OAuthSharp
         [Parameter(Key = "signature_method")]
         public string SignatureMethodString { get; private set; }
 
+		/// <summary>
+		/// The signature generated based on the specified SignatureMethod.
+		/// </summary>
         [Parameter(Key = "signature")]
         public string Signature { get; private set; }
-
-        [Parameter(Key = "token")]
-        public string Token { get; set; }
-
-        [Parameter(Key = "token_secret")]
-        public string TokenSecret { get; set; }
 
         [Parameter(Key = "version")]
         public string Version { get; private set; }
@@ -63,8 +60,8 @@ namespace OAuthSharp
             this.SignatureMethod = SignatureMethod.Plaintext;
             this.Version = "1.0";
 
-            this.Token = string.Empty;
-            this.TokenSecret = string.Empty;
+			//this.Token = string.Empty;
+			//this.TokenSecret = string.Empty;
         }
 
 		/// <summary>
@@ -123,42 +120,28 @@ namespace OAuthSharp
         /// </summary>
         private void SignRequest(string url)
         {
+	        string tokenSecret = this is OAuth1AccessRequest ? (this as OAuth1AccessRequest).TokenSecret : string.Empty;
+			string hashBase = string.Format("{0}&{1}",
+											UrlEncode(this.ConsumerSecret),
+											UrlEncode(tokenSecret));
+
 			switch (this.SignatureMethod)
 			{
 				case SignatureMethod.Plaintext:
-					this.Signature = string.Format("{0}&{1}",
-												   UrlEncode(this.ConsumerSecret),
-												   UrlEncode(this.TokenSecret));
+					this.Signature = hashBase;
 					break;
 
 				case SignatureMethod.Hmac_Sha1:
-					var hash = this.GetHash();
 					string signatureBase = this.GetSignatureBase(url);
-
 					byte[] dataBuffer = Encoding.ASCII.GetBytes(signatureBase);
-					byte[] hashBytes = hash.ComputeHash(dataBuffer);
+					
+					var sha1 = new HMACSHA1 { Key = Encoding.ASCII.GetBytes(hashBase) };
+					byte[] hashBytes = sha1.ComputeHash(dataBuffer);
 
 					this.Signature = Convert.ToBase64String(hashBytes);
 					break;
 			}
         }
-
-		/// <summary>
-		/// Calculates the necessary hash when using the HMAC-SHA1 signature method.
-		/// </summary>
-		private HashAlgorithm GetHash()
-		{
-			if (this.SignatureMethod != SignatureMethod.Hmac_Sha1)
-				throw new NotSupportedException("Hashing is only supported for the HMAC-SHA1 signature method.");
-
-			string key = string.Format("{0}&{1}",
-									   UrlEncode(this.ConsumerSecret),
-									   UrlEncode(this.TokenSecret));
-			return new HMACSHA1
-				{
-					Key = Encoding.ASCII.GetBytes(key)
-				};
-		}
 
         /// <summary>
         /// Formats the list of request parameters into "signature base" string as
