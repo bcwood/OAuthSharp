@@ -12,7 +12,7 @@
 		public override string SignatureMethod
 	    {
 			// token request always uses plaintext, as there is no token_secret yet
-			get { return SIGNATURE_METHOD_PLAINTEXT; }
+			get { return OAuth1Constants.SIGNATURE_METHOD_PLAINTEXT; }
 	    }
 
 		/// <summary>

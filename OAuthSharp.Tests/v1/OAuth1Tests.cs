@@ -45,7 +45,7 @@ namespace OAuthSharp.Tests
 		{
 			string hashKey = "mysecrethashkey";
 
-			string signature = OAuth1.GetSignature("url", null, OAuth1Request.SIGNATURE_METHOD_PLAINTEXT, hashKey);
+			string signature = OAuth1.GetSignature("url", null, OAuth1Constants.SIGNATURE_METHOD_PLAINTEXT, hashKey);
 
 			Assert.That(signature, Is.EqualTo(hashKey));
 		}

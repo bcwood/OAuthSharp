@@ -15,8 +15,8 @@ namespace OAuthSharp.Tests.Integration
 		/// the user's browser to the appropriate URL (obtained from client.GetAuthorizeTokenRedirectUrl())
 		/// to have them login and authorize the application.
 		/// </summary>
-		[TestCase(OAuth1Request.SIGNATURE_METHOD_PLAINTEXT, TestName = "PLAINTEXT")]
-		[TestCase(OAuth1Request.SIGNATURE_METHOD_HMAC_SHA1, TestName = "HMAC-SHA1")]
+		[TestCase(OAuth1Constants.SIGNATURE_METHOD_PLAINTEXT, TestName = "PLAINTEXT")]
+		[TestCase(OAuth1Constants.SIGNATURE_METHOD_HMAC_SHA1, TestName = "HMAC-SHA1")]
 		public void OAuthProcessInteractive(string signatureMethod)
 		{
 			// get request token

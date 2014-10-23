@@ -42,6 +42,7 @@
     <Compile Include="Ensure.cs" />
     <Compile Include="v1\OAuth1.cs" />
     <Compile Include="v1\OAuth1Client.cs" />
+    <Compile Include="v1\OAuth1Constants.cs" />
     <Compile Include="v1\OAuth1Response.cs" />
     <Compile Include="v1\OAuth1AccessRequest.cs" />
     <Compile Include="v1\OAuth1Request.cs" />

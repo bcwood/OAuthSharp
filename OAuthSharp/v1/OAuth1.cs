@@ -49,10 +49,10 @@ namespace OAuthSharp
 		{
 			switch (signatureMethod)
 			{
-				case OAuth1Request.SIGNATURE_METHOD_PLAINTEXT:
+				case OAuth1Constants.SIGNATURE_METHOD_PLAINTEXT:
 					return hashKey;
 
-				case OAuth1Request.SIGNATURE_METHOD_HMAC_SHA1:
+				case OAuth1Constants.SIGNATURE_METHOD_HMAC_SHA1:
 					string signatureBase = OAuth1.GetSignatureBase(url, parameters);
 					byte[] signatureBytes = Encoding.ASCII.GetBytes(signatureBase);
 

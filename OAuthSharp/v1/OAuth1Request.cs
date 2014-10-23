@@ -5,10 +5,7 @@ namespace OAuthSharp
 {
     public abstract class OAuth1Request : RequestParameters
     {
-		public const string SIGNATURE_METHOD_PLAINTEXT = "PLAINTEXT";
-		public const string SIGNATURE_METHOD_HMAC_SHA1 = "HMAC-SHA1";
-
-	    protected abstract string HashKey { get; }
+        protected abstract string HashKey { get; }
 
 		/// <summary>
         /// Your application's key for consuming the API.
@@ -59,7 +56,7 @@ namespace OAuthSharp
 
             this.ConsumerKey = consumerKey;
             this.ConsumerSecret = consumerSecret;
-            this.SignatureMethod = SIGNATURE_METHOD_PLAINTEXT;
+            this.SignatureMethod = OAuth1Constants.SIGNATURE_METHOD_PLAINTEXT;
             this.Version = "1.0";
         }
 
@@ -70,7 +67,7 @@ namespace OAuthSharp
 		/// <returns><see cref="OAuth1Response" /> instance.</returns>
 		internal OAuth1Response SubmitRequest(string url)
 		{
-			if (this.SignatureMethod == SIGNATURE_METHOD_HMAC_SHA1)
+			if (this.SignatureMethod == OAuth1Constants.SIGNATURE_METHOD_HMAC_SHA1)
 			{
 				this.Nonce = OAuth1.GenerateNonce();
 				this.Timestamp = OAuth1.GenerateTimestamp().ToString();
